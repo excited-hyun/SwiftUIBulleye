@@ -14,13 +14,18 @@ struct ContentView: View {
     //state for Usr interface views
     @State var alertIsVisible: Bool = false //state 변수 선언
     @State var sliderValue: Double = 50.0
+    @State var target: Int = Int.random(in: 1...100)
+    var sliderValueRounded: Int {
+        Int(self.sliderValue.rounded())
+    }
     
     var body: some View {
         VStack{
             Spacer()
             HStack{
                 Text("Put the bullseye as close as you can do:")
-                Text("100")
+                //Text("100")
+                Text("\(self.target)")
             }
             
             Spacer();
@@ -36,15 +41,17 @@ struct ContentView: View {
             
             //Button row
             Button(action: {
-                print("Button Pressed!")
+                //print("Button Pressed!")
+                print( "points awarded: \(self.pointForCurrentRound())")
                 self.alertIsVisible = true
             }) {
                 Text("Hit me!")
                 
             }
+            //State for alert
             .alert(isPresented: self.$alertIsVisible) {
                 Alert(title: Text("Hello There!"),
-                      message: Text("The slider value is \(Int(self.sliderValue.rounded()))."),
+                      message: Text(self.scoringMassage()),
                       dismissButton: .default(Text("Awesome!")))
             }//end of .alert
             
@@ -72,6 +79,27 @@ struct ContentView: View {
     }//end of body
     
     //method
+    func pointForCurrentRound() -> Int {
+        
+        var difference: Int
+        
+        if self.sliderValueRounded > self.target {
+            difference = self.sliderValueRounded - self.target
+        }
+        else if self.target > self.sliderValueRounded {
+            difference = self.target - self.sliderValueRounded
+        }
+        else{
+            difference = 0
+        }
+        return 100 - difference
+    }
+    
+    func scoringMassage() -> String {
+        return "The slider value is \(Int(self.sliderValueRounded)).\n"
+            + "The target value is \(self.target).\n"
+            + "Yoou scored \(pointForCurrentRound()) points this round."
+    }
     
 }//end of structure
 
